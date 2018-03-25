@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 public class App {
     private static final int DEFAULT_NUMBER_OF_REVERSE_VENDING_MACHINES = 3;
-    public static final int SECONDS = 100;
+    public static final int SECONDS = 1000;
     private static final Logger logger = LoggerFactory.getLogger(App.class);
 
     public static void main(String[] args) {
@@ -27,7 +27,8 @@ public class App {
         for (int customerNumber = 1; customerNumber <= 30; customerNumber++) {
             try {
                 market.customerEnters(new Customer(customerNumber));
-                Thread.sleep(1 * SECONDS);
+                // Every 5 seconds a new customer enters the supermarket.
+                Thread.sleep(5 * SECONDS);
             } catch (InterruptedException ignored) {
             }
         }

@@ -4,9 +4,6 @@ package hska.parsys.ex1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Customer implements Runnable {
@@ -19,7 +16,7 @@ public class Customer implements Runnable {
     private final int number;
     private int bags;
 
-    private Optional<Supermarket> supermarketInstance;
+    private ReverseVendingMachine appointedMachine;
 
     Customer(int number) {
         this.number = number;
@@ -27,28 +24,16 @@ public class Customer implements Runnable {
     }
 
     public void run() {
-        if (supermarketInstance.isPresent()) {
-            Set<ReverseVendingMachine> machines = supermarketInstance.get().getMachines();
-
-            synchronized (this) {
-                while (machines.stream().filter(machine -> !machine.isInUse()).count() == 0) {
-                    logger.debug("No free machines available. Customer #{} has to wait.", getNumber());
-                    try {
-                        this.wait();
-                        logger.warn("AWOKE FROM WAITING!!!!!!");
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                Optional<ReverseVendingMachine> freeMachine = machines.stream().filter(machine -> !machine.isInUse()).findFirst();
-                if (freeMachine.isPresent()) {
-                    this.useMachine(freeMachine.get());
-                } else {
-                    logger.error("No machine was actually free, but one should've been.");
+        synchronized (appointedMachine) {
+            while (appointedMachine.isInUse()) {
+                logger.debug("No free machines available. Customer #{} has to wait.", getNumber());
+                try {
+                    appointedMachine.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
-        } else {
-            throw new IllegalStateException("Customer needs a supermarket in order to run correctly.");
+            this.useMachine();
         }
     }
 
@@ -60,26 +45,28 @@ public class Customer implements Runnable {
         return bags;
     }
 
-    synchronized public boolean isFinished() {
+    synchronized private boolean isFinished() {
         return bags == 0;
     }
 
-    synchronized public void useMachine(ReverseVendingMachine machine) {
-        logger.info("Customer #{} is using Machine #{}", getNumber(), machine.getMachineID());
-        machine.setInUse(true);
-        while (!isFinished()) {
-            // Work on bag
-            processBag();
+    private void useMachine() {
+        synchronized (appointedMachine) {
+            logger.info("Customer #{} is using Machine #{}", getNumber(), appointedMachine.getID());
+            appointedMachine.setInUse(true);
+            while (!isFinished()) {
+                // Work on bag
+                processBag();
+            }
+            logger.info("Customer #{} finishes using Machine #{}", getNumber(), appointedMachine.getID());
+            appointedMachine.setInUse(false);
+            appointedMachine.notify();
         }
-        logger.info("Customer #{} finishes.", getNumber());
-        machine.setInUse(false);
-        this.notify();
     }
 
-    synchronized public void processBag() {
+    private synchronized void processBag() {
         int workTimeOnBag = ThreadLocalRandom.current().nextInt(MIN_TIME, MAX_TIME + 1);
         try {
-            logger.debug("Processing Bag of Customer #{} ({} seconds)", getNumber(), workTimeOnBag);
+            logger.info("Processing Bag of Customer #{} ({} seconds)", getNumber(), workTimeOnBag);
             Thread.sleep(workTimeOnBag * App.SECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -87,15 +74,7 @@ public class Customer implements Runnable {
         bags--;
     }
 
-    public Optional<Supermarket> getSupermarketInstance() {
-        return supermarketInstance;
-    }
-
-    public void setSupermarketInstance(Supermarket supermarketInstance) {
-        this.supermarketInstance = Optional.of(supermarketInstance);
-    }
-
-    public void resetSupermarketInstance() {
-        this.supermarketInstance = Optional.empty();
+    public void setAppointedMachine(ReverseVendingMachine appointedMachine) {
+        this.appointedMachine = appointedMachine;
     }
 }

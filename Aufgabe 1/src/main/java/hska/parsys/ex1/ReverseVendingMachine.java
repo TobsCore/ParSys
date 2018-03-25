@@ -13,7 +13,7 @@ public class ReverseVendingMachine {
         this.machineID = machineID;
     }
 
-    public int getMachineID() {
+    public int getID() {
         return machineID;
     }
 
