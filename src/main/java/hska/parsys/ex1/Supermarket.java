@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -21,13 +20,13 @@ public class Supermarket {
    * @param initialFreeMachines The amount of reverse vending machines must be larger than 1.
    *     Otherwise an @code{IllegalArgumentException} is thrown.
    */
-  Supermarket(int initialFreeMachines) {
+  Supermarket(int initialFreeMachines, Executor pool) {
     if (initialFreeMachines < 1) {
       throw new IllegalArgumentException(
           "The amount of machines must be greater than 0. Is " + initialFreeMachines);
     }
     freeMachines = initialFreeMachines;
-    pool = Executors.newFixedThreadPool(initialFreeMachines);
+    this.pool = pool;
   }
 
   public void customerEnters(Customer customer) {
