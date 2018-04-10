@@ -3,6 +3,8 @@ package hska.parsys.ex1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -11,6 +13,7 @@ public class Supermarket {
   private int freeMachines = 3;
   private final ReentrantLock lock = new ReentrantLock();
   private final Condition condition = lock.newCondition();
+  private Executor pool;
 
   /**
    * Initializes the supermarket with the given number of reverse vending machines.
@@ -24,6 +27,7 @@ public class Supermarket {
           "The amount of machines must be greater than 0. Is " + initialFreeMachines);
     }
     freeMachines = initialFreeMachines;
+    pool = Executors.newFixedThreadPool(initialFreeMachines);
   }
 
   public void customerEnters(Customer customer) {
@@ -41,9 +45,8 @@ public class Supermarket {
         }
       }
       freeMachines--;
-      Thread customerThread = new Thread(customer);
       customer.setSupermarket(this);
-      customerThread.start();
+      pool.execute(customer);
     } finally {
       lock.unlock();
     }
