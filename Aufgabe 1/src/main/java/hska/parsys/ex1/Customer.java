@@ -25,14 +25,6 @@ public class Customer implements Runnable {
 
     public void run() {
         synchronized (appointedMachine) {
-            while (appointedMachine.isInUse()) {
-                logger.debug("No free machines available. Customer #{} has to wait.", getNumber());
-                try {
-                    appointedMachine.wait();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
             this.useMachine();
         }
     }
@@ -59,7 +51,6 @@ public class Customer implements Runnable {
             }
             logger.info("Customer #{} finishes using Machine #{}", getNumber(), appointedMachine.getID());
             appointedMachine.setInUse(false);
-            appointedMachine.notify();
         }
     }
 
