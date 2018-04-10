@@ -27,14 +27,19 @@ public class Supermarket {
 
     while(freeMachines == 0) {
       try {
+        logger.info("Customer #{} has to wait", customer.getNumber());
         wait();
       } catch (InterruptedException e) {
         e.printStackTrace();
       }
     }
+    freeMachines--;
     Thread customerThread = new Thread(customer);
     customer.setSupermarket(this);
     customerThread.start();
+  }
+
+  public synchronized void customerLeaves() {
     freeMachines++;
     notify();
   }

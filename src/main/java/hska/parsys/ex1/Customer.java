@@ -28,7 +28,7 @@ public class Customer implements Runnable {
       processBag();
     }
     logger.info("Customer #{} finishes using machine", getNumber());
-
+    supermarket.customerLeaves();
   }
 
   public int getNumber() {
