@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 public class App {
     private static final int DEFAULT_NUMBER_OF_REVERSE_VENDING_MACHINES = 3;
-    public static final int SECONDS = 10;
+    public static final int SECONDS = 1000;
     private static final Logger logger = LoggerFactory.getLogger(App.class);
 
     public static void main(String[] args) {
