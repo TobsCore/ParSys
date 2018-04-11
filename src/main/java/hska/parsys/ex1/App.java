@@ -30,7 +30,7 @@ public class App {
     ExecutorService pool = Executors.newFixedThreadPool(numberOFMachines);
 
     // Example of another ExecutorService
-    // ExecutorService pool = Executors.unconfigurableExecutorService(numberOFMachines);
+    // ExecutorService pool = Executors.newCachedThreadPool();
     Supermarket market = new Supermarket(numberOFMachines, pool);
 
     for (int customerNumber = 1; customerNumber <= 30; customerNumber++) {
