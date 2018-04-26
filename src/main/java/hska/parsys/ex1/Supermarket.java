@@ -4,15 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.ReentrantLock;
 
 class Supermarket {
   private static Logger logger = LoggerFactory.getLogger(Supermarket.class);
-  private int freeMachines;
-  private final ReentrantLock lock = new ReentrantLock();
-  private final Condition condition = lock.newCondition();
+  private final Semaphore semaphore = new Semaphore(3);
   private ExecutorService pool;
 
   /**
@@ -26,26 +23,15 @@ class Supermarket {
       throw new IllegalArgumentException(
           "The amount of machines must be greater than 0. Is " + initialFreeMachines);
     }
-    freeMachines = initialFreeMachines;
     this.pool = pool;
   }
 
-  void customerEnters(Customer customer) {
-    lock.lock();
+  void customerEnters(Customer customer) throws InterruptedException {
+    semaphore.acquire();
     logger.info(
         "Customer #{} ({} bags) enters the supermarket", customer.getNumber(), customer.getBags());
 
     try {
-      while (freeMachines == 0) {
-        try {
-          condition.await();
-          logger.info("Customer #{} has to wait", customer.getNumber());
-        } catch (InterruptedException e) {
-          e.printStackTrace();
-        }
-      }
-      freeMachines--;
-
       pool.submit(
           () -> {
             logger.info("Customer #{} is using machine.", customer.getNumber());
@@ -65,20 +51,9 @@ class Supermarket {
               customer.decreadeBags();
             }
             logger.info("Customer #{} finishes using machine", customer.getNumber());
-            this.customerLeaves();
           });
     } finally {
-      lock.unlock();
-    }
-  }
-
-  private void customerLeaves() {
-    lock.lock();
-    try {
-      freeMachines++;
-      condition.signal();
-    } finally {
-      lock.unlock();
+      semaphore.release();
     }
   }
 }

@@ -27,7 +27,7 @@ public class App {
     logger.info("Starting Supermarket Simulation...");
 
     // Create a thread pool with a size according to the available machines.
-    ExecutorService pool = Executors.newFixedThreadPool(numberOFMachines);
+    ExecutorService pool = Executors.newFixedThreadPool(1);
 
     // Example of another ExecutorService
     // ExecutorService pool = Executors.newCachedThreadPool();
