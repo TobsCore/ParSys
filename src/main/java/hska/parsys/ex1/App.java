@@ -8,7 +8,7 @@ import java.util.concurrent.Executors;
 
 public class App {
   private static final int DEFAULT_NUMBER_OF_REVERSE_VENDING_MACHINES = 3;
-  static final int SECONDS = 10;
+  static final int SECONDS = 1000;
   private static final Logger logger = LoggerFactory.getLogger(App.class);
 
   public static void main(String[] args) {
@@ -26,12 +26,8 @@ public class App {
     logger.info("Supermarket has {} reverse vending machines.", numberOFMachines);
     logger.info("Starting Supermarket Simulation...");
 
-    // Create a thread pool with a size according to the available machines.
-    ExecutorService pool = Executors.newFixedThreadPool(1);
 
-    // Example of another ExecutorService
-    // ExecutorService pool = Executors.newCachedThreadPool();
-    Supermarket market = new Supermarket(numberOFMachines, pool);
+    Supermarket market = new Supermarket(numberOFMachines);
 
     for (int customerNumber = 1; customerNumber <= 30; customerNumber++) {
       try {
@@ -41,7 +37,5 @@ public class App {
       } catch (InterruptedException ignored) {
       }
     }
-
-    pool.shutdown();
   }
 }
