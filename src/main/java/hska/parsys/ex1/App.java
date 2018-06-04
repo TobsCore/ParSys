@@ -3,12 +3,10 @@ package hska.parsys.ex1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class App {
   private static final int DEFAULT_NUMBER_OF_REVERSE_VENDING_MACHINES = 3;
-  static final int SECONDS = 1000;
   private static final Logger logger = LoggerFactory.getLogger(App.class);
 
   public static void main(String[] args) {
@@ -33,7 +31,7 @@ public class App {
       try {
         market.customerEnters(new Customer(customerNumber));
         // Every 5 seconds a new customer enters the supermarket.
-        Thread.sleep(5 * SECONDS);
+        TimeUnit.SECONDS.sleep(5);
       } catch (InterruptedException ignored) {
       }
     }

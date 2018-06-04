@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 public class Automat implements Runnable {
   private BlockingQueue<Customer> customerQueue;
@@ -31,7 +32,7 @@ public class Automat implements Runnable {
         try {
           logger.info(
               "Processing Bag of Customer #{} ({} seconds)", customer.getNumber(), workTimeOnBag);
-          Thread.sleep(workTimeOnBag * App.SECONDS);
+            TimeUnit.SECONDS.sleep(workTimeOnBag);
         } catch (InterruptedException e) {
           e.printStackTrace();
         }
