@@ -25,7 +25,7 @@ class Customer implements Comparable<Customer> {
     return bags;
   }
 
-  void decreadeBags() {
+  void decrementBags() {
     bags--;
   }
 

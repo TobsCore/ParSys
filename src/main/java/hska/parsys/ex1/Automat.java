@@ -11,34 +11,33 @@ public class Automat implements Runnable {
   private BlockingQueue<Customer> customerQueue;
   private static Logger logger = LoggerFactory.getLogger(Supermarket.class);
 
-  public Automat(BlockingQueue<Customer> customerQueue) {
+  Automat(BlockingQueue<Customer> customerQueue) {
     this.customerQueue = customerQueue;
   }
 
   @Override
   public void run() {
-    while (true) {
-      Customer customer = null;
-      try {
-        customer = customerQueue.take();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-      logger.info("Customer #{} is using machine.", customer.getNumber());
-      while (customer.getBags() != 0) {
-        // Work on bag
-        int workTimeOnBag =
-            ThreadLocalRandom.current().nextInt(Customer.MIN_TIME, Customer.MAX_TIME + 1);
-        try {
-          logger.info(
-              "Processing Bag of Customer #{} ({} seconds)", customer.getNumber(), workTimeOnBag);
+    try {
+      while (true) {
+        Customer customer = customerQueue.take();
+        logger.info("Customer #{} is using machine.", customer.getNumber());
+        while (customer.getBags() != 0) {
+          // Work on bag
+          int workTimeOnBag =
+              ThreadLocalRandom.current().nextInt(Customer.MIN_TIME, Customer.MAX_TIME + 1);
+          try {
+            logger.info(
+                "Processing Bag of Customer #{} ({} seconds)", customer.getNumber(), workTimeOnBag);
             TimeUnit.SECONDS.sleep(workTimeOnBag);
-        } catch (InterruptedException e) {
-          e.printStackTrace();
+          } catch (InterruptedException e) {
+            e.printStackTrace();
+          }
+          customer.decrementBags();
         }
-        customer.decreadeBags();
+        logger.info("Customer #{} finishes using machine", customer.getNumber());
       }
-      logger.info("Customer #{} finishes using machine", customer.getNumber());
+    } catch (InterruptedException e) {
+      e.printStackTrace();
     }
   }
 }
