@@ -23,7 +23,7 @@ class Supermarket {
     }
     this.machineCount = initialFreeMachines;
     for (int i = 0; i < initialFreeMachines; i++) {
-      new Thread(new Automat(queue)).start();
+      new Thread(new Automaton(queue)).start();
     }
   }
 

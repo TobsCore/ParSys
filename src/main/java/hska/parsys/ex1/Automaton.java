@@ -7,11 +7,11 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
-public class Automat implements Runnable {
+public class Automaton implements Runnable {
   private BlockingQueue<Customer> customerQueue;
   private static Logger logger = LoggerFactory.getLogger(Supermarket.class);
 
-  Automat(BlockingQueue<Customer> customerQueue) {
+  Automaton(BlockingQueue<Customer> customerQueue) {
     this.customerQueue = customerQueue;
   }
 
