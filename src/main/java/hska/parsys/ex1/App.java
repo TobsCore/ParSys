@@ -35,5 +35,10 @@ public class App {
       } catch (InterruptedException ignored) {
       }
     }
+
+    try {
+      market.shutdown();
+    } catch (InterruptedException ignored) {
+    }
   }
 }

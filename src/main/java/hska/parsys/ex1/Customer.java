@@ -10,11 +10,18 @@ class Customer implements Comparable<Customer> {
   private final int number;
   private int bags;
   private boolean isPremiumMember;
+  private final boolean isPoisonPill;
 
   Customer(int number) {
     this.number = number;
+    this.isPoisonPill = false;
     this.bags = ThreadLocalRandom.current().nextInt(MIN_BAGS, MAX_BAGS + 1);
     this.isPremiumMember = ThreadLocalRandom.current().nextInt(0, 100) < 30;
+  }
+
+  Customer(boolean poisonPill) {
+    this.isPoisonPill = poisonPill;
+    this.number = -1;
   }
 
   int getNumber() {
@@ -29,13 +36,17 @@ class Customer implements Comparable<Customer> {
     bags--;
   }
 
+  boolean isPoisonPill() {
+    return isPoisonPill;
+  }
+
   public String toString() {
     String premium = isPremiumMember ? " and prime Member" : "";
     return "Customer #" + this.number + " (" + this.bags + " bags" + premium + ")";
   }
 
-    @Override
-    public int compareTo(Customer o) {
-        return isPremiumMember ? -1 : 1;
-    }
+  @Override
+  public int compareTo(Customer o) {
+    return isPremiumMember ? -1 : 1;
+  }
 }

@@ -7,6 +7,7 @@ import java.util.concurrent.*;
 
 class Supermarket {
   private static Logger logger = LoggerFactory.getLogger(Supermarket.class);
+  private final int machineCount;
   private BlockingQueue<Customer> queue = new PriorityBlockingQueue<>();
 
   /**
@@ -20,6 +21,7 @@ class Supermarket {
       throw new IllegalArgumentException(
           "The amount of machines must be greater than 0. Is " + initialFreeMachines);
     }
+    this.machineCount = initialFreeMachines;
     for (int i = 0; i < initialFreeMachines; i++) {
       new Thread(new Automat(queue)).start();
     }
@@ -29,5 +31,11 @@ class Supermarket {
     queue.put(customer);
     logger.info(
         "{} enters the supermarket", customer.toString());
+  }
+
+  void shutdown() throws InterruptedException {
+    for (int i = 0; i < machineCount; i++) {
+      queue.put(new Customer(true));
+    }
   }
 }

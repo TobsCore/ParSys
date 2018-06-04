@@ -20,6 +20,9 @@ public class Automat implements Runnable {
     try {
       while (true) {
         Customer customer = customerQueue.take();
+        if (customer.isPoisonPill()) {
+            return;
+        }
         logger.info("Customer #{} is using machine.", customer.getNumber());
         while (customer.getBags() != 0) {
           // Work on bag
